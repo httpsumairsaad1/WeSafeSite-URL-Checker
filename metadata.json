@@ -1,0 +1,5 @@
+{
+  "name": "WeSafeSite",
+  "description": "Autonomous multi-agent security system that continuously tests, detects, and patches website vulnerabilities.",
+  "requestFramePermissions": []
+}
