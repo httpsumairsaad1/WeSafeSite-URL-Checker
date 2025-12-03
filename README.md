@@ -93,6 +93,7 @@ graph TD
 ├── src/
 │   ├── App.tsx             # Main Router & Layout
 │   ├── types.ts            # TS Interfaces (Vulnerability, AgentLog)
+│   ├── firebaseConfig.ts            
 │   ├── pages/
 │   │   └── Landing.tsx     # Hero page with Binary Pipeline Animation
 │   ├── components/
