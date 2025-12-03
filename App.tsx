@@ -6,8 +6,6 @@ import { Dashboard } from './components/Dashboard';
 import { ScanResults } from './components/ScanResults';
 import { Settings } from './components/Settings';
 import { Shield, Home, Settings as SettingsIcon, LogOut, Activity, Loader2 } from 'lucide-react';
-import { auth } from './firebaseConfig';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Sidebar: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const location = useLocation();
@@ -16,13 +14,9 @@ const Sidebar: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const isActive = (path: string) => location.pathname === path ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/50';
 
     const handleLogout = async () => {
-        try {
-            await signOut(auth);
-            onLogout();
-            navigate('/');
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
+        // Mock logout
+        onLogout();
+        navigate('/');
     };
 
     return (
@@ -72,20 +66,22 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
-        setIsLoading(false);
-    });
-
-    return () => unsubscribe();
+    // Check local storage for persistent login simulation
+    const storedAuth = localStorage.getItem('wesafesite_auth');
+    if (storedAuth === 'true') {
+        setIsAuthenticated(true);
+    }
+    setIsLoading(false);
   }, []);
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const login = () => {
+      localStorage.setItem('wesafesite_auth', 'true');
+      setIsAuthenticated(true);
+  };
+  const logout = () => {
+      localStorage.removeItem('wesafesite_auth');
+      setIsAuthenticated(false);
+  };
 
   if (isLoading) {
     return (

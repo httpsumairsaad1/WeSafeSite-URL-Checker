@@ -7,8 +7,6 @@ import {
   Server, HardDrive, Network, Globe, Cpu, AlertCircle
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { auth } from '../firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 // 20+ Cyber Security Icons for the background
 const ICONS = [
@@ -54,39 +52,23 @@ export const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
     setIsLoading(true);
     setError(null);
     
-    try {
-        if (isSignUp) {
-            // Register Flow
-            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            
-            // Update profile with name (Note: Firestore would be better for company/role)
-            await updateProfile(userCredential.user, {
-                displayName: formData.fullName
-            });
-            
-            // In a real app, save company/role to Firestore 'users' collection here
-            console.log("Registered:", userCredential.user.uid, formData.company, formData.role);
-            
-        } else {
-            // Login Flow
-            await signInWithEmailAndPassword(auth, formData.email, formData.password);
+    // Simulate Authentication Delay
+    setTimeout(() => {
+        // Basic validation for demo
+        if (formData.password.length < 6) {
+             setError("Password must be at least 6 characters.");
+             setIsLoading(false);
+             return;
         }
+
+        console.log("Mock Authentication Success:", {
+            mode: isSignUp ? "Sign Up" : "Login",
+            user: formData
+        });
         
-        onLogin(); // Trigger app state update
-    } catch (err: any) {
-        console.error("Auth Error:", err);
-        // Map common Firebase errors to user-friendly messages
-        let msg = "Authentication failed. Please try again.";
-        if (err.code === 'auth/invalid-email') msg = "Invalid email address.";
-        if (err.code === 'auth/user-not-found') msg = "No user found with this email.";
-        if (err.code === 'auth/wrong-password') msg = "Incorrect password.";
-        if (err.code === 'auth/email-already-in-use') msg = "Email already registered.";
-        if (err.code === 'auth/weak-password') msg = "Password should be at least 6 characters.";
-        
-        setError(msg);
-    } finally {
         setIsLoading(false);
-    }
+        onLogin(); // Update parent app state
+    }, 1500);
   };
 
   const toggleMode = () => {
