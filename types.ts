@@ -54,6 +54,11 @@ export type SecurityCheckType =
   | 'RATE_LIMITING'
   | 'AUTH_WEAKNESS'
   | 'PATH_TRAVERSAL'
+  | 'CSRF'            // New
+  | 'SSRF'            // New
+  | 'IDOR'            // New
+  | 'OPEN_REDIRECT'   // New
+  | 'DEPENDENCY_VULN'; // New
 
 export interface ScanSession {
   id: string;
