@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Landing } from './pages/Landing';
 import { Login } from './components/Login';
 import { Dashboard } from './components/Dashboard';
 import { ScanResults } from './components/ScanResults';
 import { Settings } from './components/Settings';
-import { Shield, Home, Settings as SettingsIcon, LogOut, Activity } from 'lucide-react';
+import { Shield, Home, Settings as SettingsIcon, LogOut, Activity, Loader2 } from 'lucide-react';
+import { auth } from './firebaseConfig';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const Sidebar: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     const location = useLocation();
@@ -13,9 +15,14 @@ const Sidebar: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     
     const isActive = (path: string) => location.pathname === path ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/50';
 
-    const handleLogout = () => {
-        onLogout();
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            onLogout();
+            navigate('/');
+        } catch (error) {
+            console.error("Error signing out:", error);
+        }
     };
 
     return (
@@ -62,9 +69,31 @@ const Layout: React.FC<{ children: React.ReactNode, onLogout: () => void }> = ({
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+        setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const login = () => setIsAuthenticated(true);
   const logout = () => setIsAuthenticated(false);
+
+  if (isLoading) {
+    return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+    );
+  }
 
   return (
     <HashRouter>
