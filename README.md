@@ -24,6 +24,7 @@ Companies usually discover vulnerabilities only *after* attackers have already e
 
 ## 🏗️ Architecture: The Multi-Agent System
 
+
 WeSafeSite utilizes a **Hierarchical Agentic Workflow** to simulate a full security operations center (SOC).
 
 ```mermaid
@@ -39,6 +40,8 @@ graph TD
     Patcher -->|Generate Code Fix| User
     Memory -->|Log Trends| Dashboard
 ```
+<img width="1000" height="800" alt="WeSafeSite" src="https://github.com/user-attachments/assets/2ab09d7e-1e97-48ca-bf05-1c41d4da671a" />
+
 
 ### 🕵️ 1. Reconnaissance Agent
 *   **Role:** The Scout.
