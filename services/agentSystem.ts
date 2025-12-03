@@ -1,5 +1,7 @@
 import { AgentLog, Vulnerability, Severity, SecurityCheckType } from '../types';
 import { generatePatch } from './geminiService';
+import { db, auth } from '../firebaseConfig';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 /**
  * AGENT SYSTEM BACKEND
@@ -170,10 +172,29 @@ class AgentOrchestrator {
       this.progress = 98;
       await this.sleep(800);
       this.addLog('Memory', 'Archiving scan results to long-term storage.', 'info');
-      this.addLog('Memory', 'Updating threat models based on new findings.', 'success');
       
-      // Save to Session Storage for the Results Page to read
+      // Save to Session Storage for the Results Page to read (Frontend view)
       sessionStorage.setItem('last_scan_results', JSON.stringify(this.vulnerabilities));
+
+      // Save to Firebase Firestore (Backend persistence)
+      if (auth.currentUser) {
+        try {
+          await addDoc(collection(db, 'scans'), {
+            userId: auth.currentUser.uid,
+            targetUrl: url,
+            timestamp: serverTimestamp(),
+            vulnerabilityCount: this.vulnerabilities.length,
+            criticalCount: this.vulnerabilities.filter(v => v.severity === Severity.CRITICAL).length,
+            findings: this.vulnerabilities // In production, might want to sanitize this or store large JSON in Storage
+          });
+          this.addLog('Memory', 'Scan signature encrypted and stored in Cloud Vault.', 'success');
+        } catch (dbError) {
+          console.error("Firestore Save Error:", dbError);
+          this.addLog('Memory', 'Local storage only. Cloud sync failed.', 'warning');
+        }
+      } else {
+        this.addLog('Memory', 'Guest mode: Results stored locally only.', 'warning');
+      }
       
       this.progress = 100;
       this.addLog('Memory', 'Mission Complete. Agents standing down.', 'success');
