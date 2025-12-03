@@ -160,11 +160,14 @@ The system currently simulates checks for:
 *   [x] SQL Injection
 *   [x] XSS (Reflected/Stored)
 *   [x] CSRF & SSRF
+*   [x] Security Header Analysis
 *   [x] IDOR (Insecure Direct Object Reference)
-*   [x] Open Redirects
+*   [x] Open Redirects Analysis
 *   [x] HTTPS/SSL Misconfigurations
 *   [x] Dependency Vulnerabilities
-
+*   [x] Supply Chain Dependencies
+*   [x] Authentication Protocol
+*   [x] API Rate Limiting
 ---
 
 ## 📄 License
