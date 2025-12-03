@@ -66,25 +66,25 @@ const VulnerabilityItem: React.FC<{ vuln: Vulnerability }> = ({ vuln }) => {
   return (
     <div className="bg-surface border border-slate-800 rounded-lg overflow-hidden transition-all hover:border-slate-600 no-print">
       <div 
-        className="p-4 flex items-center justify-between cursor-pointer bg-slate-900/50"
+        className="p-4 flex flex-col sm:flex-row sm:items-center justify-between cursor-pointer bg-slate-900/50 gap-4"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center gap-4">
-          <div className={`p-2 rounded-full ${vuln.severity === Severity.CRITICAL ? 'bg-red-500/20 text-red-500' : 'bg-slate-800 text-slate-400'}`}>
+        <div className="flex items-start gap-4 overflow-hidden">
+          <div className={`p-2 rounded-full mt-1 sm:mt-0 flex-shrink-0 ${vuln.severity === Severity.CRITICAL ? 'bg-red-500/20 text-red-500' : 'bg-slate-800 text-slate-400'}`}>
             <AlertTriangle className="w-5 h-5" />
           </div>
-          <div>
-            <h4 className="font-semibold text-slate-200">{vuln.name}</h4>
-            <div className="flex gap-2 items-center mt-1">
-                <span className="text-xs bg-slate-800 px-2 py-0.5 rounded text-slate-400 font-mono">{vuln.type}</span>
-                <span className="text-xs text-slate-500 font-mono flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+          <div className="min-w-0">
+            <h4 className="font-semibold text-slate-200 truncate pr-2">{vuln.name}</h4>
+            <div className="flex flex-wrap gap-2 items-center mt-1">
+                <span className="text-xs bg-slate-800 px-2 py-0.5 rounded text-slate-400 font-mono whitespace-nowrap">{vuln.type}</span>
+                <span className="text-xs text-slate-500 font-mono flex items-center gap-1 truncate max-w-[200px] sm:max-w-xs">
+                    <span className="w-1 h-1 rounded-full bg-slate-600 flex-shrink-0"></span>
                     {vuln.path}
                 </span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between sm:justify-end gap-4">
           <SeverityBadge severity={vuln.severity} />
           {expanded ? <ChevronUp className="w-5 h-5 text-slate-500" /> : <ChevronDown className="w-5 h-5 text-slate-500" />}
         </div>
@@ -118,7 +118,7 @@ const VulnerabilityItem: React.FC<{ vuln: Vulnerability }> = ({ vuln }) => {
                 <button 
                     onClick={() => alert("Patch applied to simulated backend.")}
                     className="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded transition-colors flex items-center gap-1">
-                    <Check className="w-3 h-3" /> Apply Fix to Codebase
+                    <Check className="w-3 h-3" /> Apply Fix
                 </button>
               </div>
               <pre className="bg-black p-4 overflow-x-auto">
@@ -168,31 +168,31 @@ export const ScanResults: React.FC = () => {
   return (
     <>
     {/* SCREEN VIEW */}
-    <div className="p-8 max-w-5xl mx-auto animate-in fade-in no-print">
-      <div className="mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto animate-in fade-in no-print">
+      <div className="mb-8 flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
             <div className="flex items-center gap-2 mb-2">
                 <button onClick={() => navigate('/dashboard')} className="p-1 rounded-full hover:bg-slate-800 transition-colors">
                     <ArrowLeft className="w-5 h-5 text-slate-400" />
                 </button>
-                <h1 className="text-3xl font-bold text-white">Latest Scan Results</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-white">Latest Scan Results</h1>
             </div>
-            <p className="text-slate-400 ml-8">
+            <p className="text-slate-400 ml-8 text-sm md:text-base">
                 {vulnerabilities.length > 0 
                     ? `Found ${vulnerabilities.length} issues requiring attention.` 
                     : "System scan completed. No issues found."}
             </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
             <button 
                 onClick={handlePrint}
-                className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors border border-slate-700"
+                className="flex-1 md:flex-none justify-center bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors border border-slate-700"
             >
                 <Printer className="w-4 h-4" /> Download Report
             </button>
             <button 
                 onClick={handleClear}
-                className="text-slate-500 hover:text-red-400 transition-colors flex items-center gap-2 text-sm px-4 py-2"
+                className="flex-1 md:flex-none justify-center text-slate-500 hover:text-red-400 transition-colors flex items-center gap-2 text-sm px-4 py-2"
             >
                 <Trash2 className="w-4 h-4" /> Clear
             </button>

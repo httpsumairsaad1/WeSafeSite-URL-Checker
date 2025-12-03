@@ -73,31 +73,31 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = () =
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 animate-fade-in">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white">Mission Control</h1>
-          <p className="text-slate-400 mt-1">Deploy autonomous agents to secure your assets.</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Mission Control</h1>
+          <p className="text-slate-400 mt-1 text-sm md:text-base">Deploy autonomous agents to secure your assets.</p>
         </div>
       </div>
 
       {/* Target Acquisition Section */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 rounded-2xl p-8 relative overflow-hidden shadow-2xl">
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
         <div className="relative z-10 max-w-3xl">
-            <h2 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+            <h2 className="text-lg md:text-xl font-bold text-white mb-2 flex items-center gap-2">
                 <Globe className="w-5 h-5 text-primary" /> Target Acquisition
             </h2>
             <p className="text-slate-400 mb-6 text-sm">
                 Enter a URL to dispatch the multi-agent team. Agents will map, find flaws, and remediate vulnerabilities autonomously.
             </p>
             
-            <form onSubmit={handleStartScan} className="flex flex-col sm:flex-row gap-2">
+            <form onSubmit={handleStartScan} className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
                     <Search className="absolute left-4 top-3.5 w-5 h-5 text-slate-500" />
                     <input 
                         type="url" 
                         placeholder="https://example.com"
-                        className="w-full bg-black/30 border border-slate-600 rounded-lg py-3 pl-12 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors disabled:opacity-50"
+                        className="w-full bg-black/30 border border-slate-600 rounded-lg py-3 pl-12 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors disabled:opacity-50 text-sm md:text-base"
                         value={targetUrl}
                         onChange={(e) => setTargetUrl(e.target.value)}
                         required
@@ -107,7 +107,7 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = () =
                 <button 
                     type="submit"
                     disabled={isScanning}
-                    className="bg-primary hover:bg-emerald-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+                    className="bg-primary hover:bg-emerald-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-slate-950 font-bold px-6 py-3 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 whitespace-nowrap text-sm md:text-base"
                 >
                     {isScanning ? (
                         <>
@@ -139,9 +139,9 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = () =
 
             {scanComplete && (
                 <div className="mt-4 animate-in fade-in slide-in-from-top-2">
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-emerald-500 rounded-full text-slate-950">
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-3 w-full">
+                            <div className="p-2 bg-emerald-500 rounded-full text-slate-950 shrink-0">
                                 <CheckCircle className="w-5 h-5" />
                             </div>
                             <div>
@@ -153,7 +153,7 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = () =
                         </div>
                         <button 
                             onClick={handleViewReport}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/10 transition-colors"
+                            className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-4 py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10 transition-colors"
                         >
                             <FileText className="w-4 h-4" /> View Remediation Report
                         </button>
@@ -168,7 +168,7 @@ export const Dashboard: React.FC<{ onNavigate?: (page: string) => void }> = () =
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Live Agent Feed */}
         <div className="lg:col-span-2">
             <h3 className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2">

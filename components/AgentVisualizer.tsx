@@ -32,16 +32,16 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ logs = [], tar
     : -1;
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-[420px]">
+    <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-auto md:h-[420px]">
       {/* Left: Agent Pipeline */}
-      <div className="w-full md:w-1/3 bg-slate-950 p-6 border-r border-slate-800 flex flex-col">
-        <h3 className="text-xs font-mono text-slate-400 mb-6 uppercase tracking-wider flex items-center gap-2">
+      <div className="w-full md:w-1/3 bg-slate-950 p-4 md:p-6 border-b md:border-b-0 md:border-r border-slate-800 flex flex-col">
+        <h3 className="text-xs font-mono text-slate-400 mb-4 md:mb-6 uppercase tracking-wider flex items-center gap-2">
             <Target className="w-4 h-4" /> Operations Pipeline
         </h3>
         
-        <div className="flex-1 space-y-6 relative">
+        <div className="flex-1 space-y-4 md:space-y-6 relative mb-4 md:mb-0">
              {/* Connector Line */}
-            <div className="absolute left-5 top-4 bottom-8 w-0.5 bg-slate-800 z-0"></div>
+            <div className="absolute left-5 top-4 bottom-8 w-0.5 bg-slate-800 z-0 hidden md:block"></div>
 
             {AGENTS.map((agent, idx) => {
                 const isActive = idx === activeAgentIndex;
@@ -51,7 +51,7 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ logs = [], tar
                 return (
                 <div key={agent.name} className="relative z-10 flex items-center space-x-4">
                     <div className={`
-                        p-2 rounded-lg transition-all duration-300 border
+                        p-2 rounded-lg transition-all duration-300 border flex-shrink-0
                         ${isActive ? `bg-slate-800 border-${agent.color.split('-')[1]}-500 shadow-lg shadow-${agent.color.split('-')[1]}-500/20` : 'bg-slate-900 border-slate-800'}
                         ${isPast ? 'opacity-50' : 'opacity-100'}
                     `}>
@@ -59,24 +59,24 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ logs = [], tar
                     </div>
                     <div>
                         <div className={`text-sm font-bold ${isActive ? 'text-white' : 'text-slate-500'}`}>{agent.desc}</div>
-                        <div className="text-xs text-slate-600 font-mono">{agent.name} Agent</div>
+                        <div className="text-xs text-slate-600 font-mono hidden sm:block">{agent.name} Agent</div>
                     </div>
                 </div>
                 );
             })}
         </div>
         
-        <div className="mt-4 pt-4 border-t border-slate-800">
+        <div className="mt-auto pt-4 border-t border-slate-800">
              <div className="flex items-center space-x-2 text-xs text-emerald-500">
                 <div className={`w-2 h-2 bg-emerald-500 rounded-full ${activeAgentIndex > -1 ? 'animate-pulse' : 'opacity-20'}`}></div>
-                <span className="font-mono truncate max-w-[150px]">{targetUrl || "IDLE"}</span>
+                <span className="font-mono truncate max-w-[200px]">{targetUrl || "IDLE"}</span>
              </div>
         </div>
       </div>
 
       {/* Right: Terminal Output */}
-      <div className="w-full md:w-2/3 bg-black p-6 font-mono text-sm relative flex flex-col">
-        <div className="h-8 flex items-center justify-between border-b border-slate-800 pb-2 mb-4">
+      <div className="w-full md:w-2/3 bg-black p-4 md:p-6 font-mono text-sm relative flex flex-col h-[300px] md:h-auto">
+        <div className="h-8 flex items-center justify-between border-b border-slate-800 pb-2 mb-4 shrink-0">
             <div className="flex items-center text-slate-500">
                 <Terminal className="w-4 h-4 mr-2" />
                 <span className="text-xs">agent_execution_log.sh</span>
@@ -97,7 +97,7 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ logs = [], tar
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-start gap-3 text-xs md:text-sm"
               >
-                <span className="text-slate-700 shrink-0 select-none">
+                <span className="text-slate-700 shrink-0 select-none hidden sm:inline">
                     {log.timestamp.toLocaleTimeString([], {hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit'})}
                 </span>
                 

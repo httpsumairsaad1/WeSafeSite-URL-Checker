@@ -4,7 +4,7 @@ import { AgentVisualizer } from '../components/AgentVisualizer';
 import { 
   Shield, Zap, Search, Lock, ArrowRight, CheckCircle2, 
   Globe, Server, Settings, Cpu, FileText, ScanSearch,
-  Database, Code, Network, AlertTriangle, X, Linkedin, Instagram, Palette
+  Database, Code, Network, AlertTriangle, X, Linkedin, Instagram, Palette, Menu
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -110,7 +110,7 @@ const AboutModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen
                     initial={{ scale: 0.95, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                    className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative"
+                    className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-y-auto max-h-[90vh] shadow-2xl relative"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <button 
@@ -120,7 +120,7 @@ const AboutModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen
                         <X className="w-5 h-5" />
                     </button>
 
-                    <div className="p-8">
+                    <div className="p-6 md:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                                 <Shield className="w-8 h-8 text-primary" />
@@ -205,6 +205,7 @@ export const Landing: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [demoLogs, setDemoLogs] = useState<AgentLog[]>([]);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Horizontal Pipeline Animation
   useEffect(() => {
@@ -255,14 +256,16 @@ export const Landing: React.FC = () => {
 
   const handleSignIn = () => {
     navigate('/login');
+    setIsMobileMenuOpen(false);
   };
 
   const handleGetStarted = () => {
     navigate('/login?mode=signup');
+    setIsMobileMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-background text-white">
+    <div className="min-h-screen bg-background text-white font-sans">
       <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
       
       {/* Navigation */}
@@ -272,10 +275,12 @@ export const Landing: React.FC = () => {
             <Shield className="w-6 h-6" />
             <span>WeSafeSite</span>
           </div>
-          <div className="flex items-center gap-6">
+          
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-6">
              <button 
                 onClick={() => setIsAboutOpen(true)}
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block"
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
              >
                 About
              </button>
@@ -292,43 +297,69 @@ export const Landing: React.FC = () => {
                 Get Started
             </button>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="md:hidden text-slate-300 p-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+             {isMobileMenuOpen ? <X /> : <Menu />}
+          </button>
         </div>
+
+        {/* Mobile Nav Overlay */}
+        <AnimatePresence>
+            {isMobileMenuOpen && (
+                <motion.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="md:hidden bg-slate-950 border-b border-slate-800 overflow-hidden"
+                >
+                    <div className="flex flex-col p-6 space-y-4">
+                        <button onClick={() => { setIsAboutOpen(true); setIsMobileMenuOpen(false); }} className="text-left text-slate-300 py-2">About</button>
+                        <button onClick={handleSignIn} className="text-left text-slate-300 py-2">Sign In</button>
+                        <button onClick={handleGetStarted} className="bg-white text-slate-950 px-4 py-3 rounded-lg font-bold text-center">Get Started</button>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
+      <section className="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden px-4 md:px-0">
          {/* Background Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full -z-10" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-primary/20 blur-[80px] md:blur-[120px] rounded-full -z-10" />
         
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-primary text-sm font-medium">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-primary text-xs md:text-sm font-medium">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
                 Autonomous Security Agents v2.0 Live
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
               Sees Everything. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
                 Fixes Everything.
               </span>
             </h1>
-            <p className="text-lg text-slate-400 max-w-xl leading-relaxed">
+            <p className="text-base md:text-lg text-slate-400 max-w-xl leading-relaxed">
               Don't just find vulnerabilities—fix them before attackers strike. 
               Our multi-agent AI team continuously maps, tests, and patches your web applications 24/7.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-               <button onClick={handleGetStarted} className="flex items-center justify-center gap-2 bg-primary hover:bg-emerald-600 text-slate-950 px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg shadow-emerald-500/20">
+               <button onClick={handleGetStarted} className="flex items-center justify-center gap-2 bg-primary hover:bg-emerald-600 text-slate-950 px-8 py-4 rounded-lg font-bold text-lg transition-all shadow-lg shadow-emerald-500/20 w-full sm:w-auto">
                     Start Free Scan <ArrowRight className="w-5 h-5" />
                </button>
-               <button onClick={handleSignIn} className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all border border-slate-700">
+               <button onClick={handleSignIn} className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all border border-slate-700 w-full sm:w-auto">
                     View Demo
                </button>
             </div>
             
-            <div className="flex items-center gap-6 text-sm text-slate-500 pt-4">
+            <div className="flex flex-wrap gap-4 md:gap-6 text-sm text-slate-500 pt-4">
                 <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-slate-400" /> No code required
                 </div>
@@ -342,7 +373,7 @@ export const Landing: React.FC = () => {
           </div>
 
           {/* Hero Visualizer */}
-          <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
+          <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-200 mt-8 lg:mt-0">
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl blur opacity-20"></div>
             <AgentVisualizer logs={demoLogs} targetUrl="demo-target.com" />
           </div>
@@ -350,120 +381,123 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* WORKFLOW PIPELINE ANIMATION SECTION */}
-      <section className="py-24 bg-slate-900/30 border-t border-b border-slate-800 relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-slate-900/30 border-t border-b border-slate-800 relative overflow-hidden">
         {/* Subtle grid bg for this section */}
         <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:14px_14px]"></div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center mb-20">
-             <h2 className="text-3xl font-bold mb-4">How It Works: The Autonomous Pipeline</h2>
+          <div className="text-center mb-12 md:mb-20">
+             <h2 className="text-2xl md:text-3xl font-bold mb-4">How It Works: The Autonomous Pipeline</h2>
              <p className="text-slate-400">Watch how our agents process your security posture in real-time.</p>
           </div>
 
-          <div className="relative max-w-6xl mx-auto py-12">
-            
-            {/* 1. Background Track (Faint Binary) */}
-            <div className="absolute top-[40px] left-0 w-full h-1 bg-slate-800/50 rounded-full flex overflow-hidden">
-                <div className="w-full text-[10px] text-slate-700 font-mono tracking-widest whitespace-nowrap opacity-20 select-none">
-                    01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
-                </div>
-            </div>
-
-            {/* 2. Active Data Stream (The "Edge Line") */}
-            <div 
-                className="absolute top-[32px] left-0 h-5 overflow-hidden transition-all duration-700 ease-in-out"
-                style={{ width: `${(activeStep / (PIPELINE_STEPS.length - 1)) * 100}%` }}
-            >
-                {/* The flowing data effect */}
-                <motion.div 
-                    className={`h-full flex items-center whitespace-nowrap font-mono text-[10px] font-bold tracking-widest ${PIPELINE_STEPS[activeStep].dataColor}`}
-                    animate={{ x: ["0%", "-50%"] }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                >
-                    {/* Repeat string to ensure seamless loop */}
-                    {Array(20).fill(PIPELINE_STEPS[activeStep].dataStream).join(' -- ')}
-                </motion.div>
+          {/* Scrollable Container for Mobile */}
+          <div className="overflow-x-auto pb-8 -mx-6 px-6 md:overflow-visible md:pb-0 md:px-0 scrollbar-hide">
+            <div className="relative min-w-[800px] md:min-w-0 max-w-6xl mx-auto py-12">
                 
-                {/* Glow overlay for the line */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-current to-current opacity-20"></div>
-            </div>
-
-            {/* 3. The Nodes */}
-            <div className="relative flex justify-between items-start z-10 w-full">
-              {PIPELINE_STEPS.map((step, index) => {
-                const isActive = index === activeStep;
-                const isPast = index < activeStep;
-                const Icon = step.icon;
-
-                return (
-                  <div key={step.id} className="flex flex-col items-center group cursor-default relative" style={{ width: '14%' }}>
-                    {/* Node Circle */}
-                    <motion.div 
-                      className={`
-                        w-20 h-20 rounded-2xl flex items-center justify-center border-2 mb-6 bg-slate-950 relative z-20 transition-colors duration-500
-                        ${isActive ? `border-${step.color.split('-')[1]}-500 shadow-[0_0_30px_rgba(var(--tw-shadow-color),0.3)]` : isPast ? 'border-slate-700 text-slate-500' : 'border-slate-800 text-slate-700'}
-                      `}
-                      animate={{
-                        scale: isActive ? 1.1 : 1,
-                        y: isActive ? -5 : 0,
-                        borderColor: isActive ? '#10b981' : isPast ? '#334155' : '#1e293b' // Fallback colors handled by class, this helps framer
-                      }}
-                    >
-                      {/* Active Pulse Background */}
-                      {isActive && (
-                        <div className={`absolute inset-0 rounded-2xl bg-${step.color.split('-')[1]}-500/10 animate-pulse`} />
-                      )}
-                      
-                      <Icon className={`w-8 h-8 ${isActive ? step.color : isPast ? 'text-slate-500' : 'text-slate-700'} transition-colors duration-300`} />
-                      
-                      {/* Node Connection Pulse (The Spinner) */}
-                      {isActive && (
-                        <div className="absolute -inset-2 border border-dashed border-white/20 rounded-2xl animate-[spin_10s_linear_infinite]" />
-                      )}
-                    </motion.div>
-
-                    {/* Text Content */}
-                    <div className="text-center space-y-2 absolute top-28 w-40">
-                      <h3 className={`font-bold text-sm transition-colors duration-300 ${isActive ? 'text-white' : 'text-slate-600'}`}>
-                        {step.title}
-                      </h3>
-                      
-                      {/* Description Animation */}
-                      <div className="h-12 relative"> 
-                         <AnimatePresence mode='wait'>
-                            {isActive && (
-                            <motion.div 
-                                key={`desc-${step.id}`}
-                                initial={{ opacity: 0, y: -5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 5 }}
-                                className="absolute inset-0 flex justify-center"
-                            >
-                                <span className="text-xs text-primary/80 font-mono bg-primary/5 px-2 py-1 rounded border border-primary/10">
-                                    {step.desc}
-                                </span>
-                            </motion.div>
-                            )}
-                        </AnimatePresence>
-                      </div>
+                {/* 1. Background Track (Faint Binary) */}
+                <div className="absolute top-[40px] left-0 w-full h-1 bg-slate-800/50 rounded-full flex overflow-hidden">
+                    <div className="w-full text-[10px] text-slate-700 font-mono tracking-widest whitespace-nowrap opacity-20 select-none">
+                        01010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101010101
                     </div>
-                  </div>
-                );
-              })}
+                </div>
+
+                {/* 2. Active Data Stream (The "Edge Line") */}
+                <div 
+                    className="absolute top-[32px] left-0 h-5 overflow-hidden transition-all duration-700 ease-in-out"
+                    style={{ width: `${(activeStep / (PIPELINE_STEPS.length - 1)) * 100}%` }}
+                >
+                    {/* The flowing data effect */}
+                    <motion.div 
+                        className={`h-full flex items-center whitespace-nowrap font-mono text-[10px] font-bold tracking-widest ${PIPELINE_STEPS[activeStep].dataColor}`}
+                        animate={{ x: ["0%", "-50%"] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                    >
+                        {/* Repeat string to ensure seamless loop */}
+                        {Array(20).fill(PIPELINE_STEPS[activeStep].dataStream).join(' -- ')}
+                    </motion.div>
+                    
+                    {/* Glow overlay for the line */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-current to-current opacity-20"></div>
+                </div>
+
+                {/* 3. The Nodes */}
+                <div className="relative flex justify-between items-start z-10 w-full">
+                {PIPELINE_STEPS.map((step, index) => {
+                    const isActive = index === activeStep;
+                    const isPast = index < activeStep;
+                    const Icon = step.icon;
+
+                    return (
+                    <div key={step.id} className="flex flex-col items-center group cursor-default relative" style={{ width: '14%' }}>
+                        {/* Node Circle */}
+                        <motion.div 
+                        className={`
+                            w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center border-2 mb-6 bg-slate-950 relative z-20 transition-colors duration-500
+                            ${isActive ? `border-${step.color.split('-')[1]}-500 shadow-[0_0_30px_rgba(var(--tw-shadow-color),0.3)]` : isPast ? 'border-slate-700 text-slate-500' : 'border-slate-800 text-slate-700'}
+                        `}
+                        animate={{
+                            scale: isActive ? 1.1 : 1,
+                            y: isActive ? -5 : 0,
+                            borderColor: isActive ? '#10b981' : isPast ? '#334155' : '#1e293b' // Fallback colors handled by class, this helps framer
+                        }}
+                        >
+                        {/* Active Pulse Background */}
+                        {isActive && (
+                            <div className={`absolute inset-0 rounded-2xl bg-${step.color.split('-')[1]}-500/10 animate-pulse`} />
+                        )}
+                        
+                        <Icon className={`w-6 h-6 md:w-8 md:h-8 ${isActive ? step.color : isPast ? 'text-slate-500' : 'text-slate-700'} transition-colors duration-300`} />
+                        
+                        {/* Node Connection Pulse (The Spinner) */}
+                        {isActive && (
+                            <div className="absolute -inset-2 border border-dashed border-white/20 rounded-2xl animate-[spin_10s_linear_infinite]" />
+                        )}
+                        </motion.div>
+
+                        {/* Text Content */}
+                        <div className="text-center space-y-2 absolute top-24 md:top-28 w-32 md:w-40">
+                        <h3 className={`font-bold text-xs md:text-sm transition-colors duration-300 ${isActive ? 'text-white' : 'text-slate-600'}`}>
+                            {step.title}
+                        </h3>
+                        
+                        {/* Description Animation */}
+                        <div className="h-12 relative"> 
+                            <AnimatePresence mode='wait'>
+                                {isActive && (
+                                <motion.div 
+                                    key={`desc-${step.id}`}
+                                    initial={{ opacity: 0, y: -5 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 5 }}
+                                    className="absolute inset-0 flex justify-center"
+                                >
+                                    <span className="text-[10px] md:text-xs text-primary/80 font-mono bg-primary/5 px-2 py-1 rounded border border-primary/10">
+                                        {step.desc}
+                                    </span>
+                                </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                        </div>
+                    </div>
+                    );
+                })}
+                </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="py-24 bg-slate-950 relative border-t border-slate-900">
-        <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold mb-4">The A-Team for Your Security</h2>
+      <section className="py-16 md:py-24 bg-slate-950 relative border-t border-slate-900 px-4 md:px-0">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+            <div className="text-center mb-12 md:mb-16">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">The A-Team for Your Security</h2>
                 <p className="text-slate-400 max-w-2xl mx-auto">Traditional scanners just report problems. WeSafeSite's autonomous agents work together to solve them.</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 <FeatureCard 
                     icon={Search} 
                     title="Recon Agent" 
@@ -484,10 +518,10 @@ export const Landing: React.FC = () => {
       </section>
 
       {/* NEW SECTION: Know Your Enemy */}
-      <section className="py-24 bg-slate-900 border-t border-slate-800 relative">
+      <section className="py-16 md:py-24 bg-slate-900 border-t border-slate-800 relative px-4 md:px-0">
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-20"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-           <div className="mb-16 text-center">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+           <div className="mb-12 md:mb-16 text-center">
              <span className="text-emerald-500 font-mono text-sm tracking-wider uppercase">Education Hub</span>
              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-white">Know Your Enemy</h2>
              <p className="text-slate-400 max-w-2xl mx-auto">
@@ -495,14 +529,14 @@ export const Landing: React.FC = () => {
              </p>
            </div>
 
-           <div className="grid md:grid-cols-2 gap-6">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {THREAT_KNOWLEDGE.map((item, idx) => (
                 <div key={idx} className="bg-slate-950 border border-slate-800 rounded-xl p-6 hover:border-emerald-500/50 transition-all group">
-                   <div className="flex items-start gap-4">
+                   <div className="flex flex-col sm:flex-row items-start gap-4">
                       <div className="p-3 bg-slate-900 rounded-lg group-hover:bg-emerald-500/10 transition-colors">
                         <item.icon className="w-6 h-6 text-emerald-500" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 w-full">
                         <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
                         <div className="flex flex-col gap-4 mt-4">
                            {/* Simple View */}
@@ -530,9 +564,9 @@ export const Landing: React.FC = () => {
       </section>
 
        {/* Footer */}
-       <footer className="bg-slate-950 border-t border-slate-900 py-12">
-            <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm">
-                <div className="flex items-center gap-2 mb-4 md:mb-0">
+       <footer className="bg-slate-950 border-t border-slate-900 py-12 px-4 md:px-0">
+            <div className="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm text-center md:text-left gap-4">
+                <div className="flex items-center gap-2">
                     <Shield className="w-5 h-5" />
                     <span className="font-semibold text-slate-400">WeSafeSite</span>
                 </div>
@@ -546,7 +580,7 @@ export const Landing: React.FC = () => {
 };
 
 const FeatureCard: React.FC<{ icon: any, title: string, desc: string }> = ({ icon: Icon, title, desc }) => (
-    <div className="bg-slate-900/50 p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition-colors">
+    <div className="bg-slate-900/50 p-6 md:p-8 rounded-2xl border border-slate-800 hover:border-slate-700 transition-colors">
         <div className="w-12 h-12 bg-slate-800 rounded-lg flex items-center justify-center mb-6">
             <Icon className="w-6 h-6 text-primary" />
         </div>
