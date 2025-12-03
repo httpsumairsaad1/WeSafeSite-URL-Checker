@@ -4,9 +4,11 @@ import {
   Briefcase, User, Mail, CheckCircle2, Loader2,
   ShieldCheck, Eye, EyeOff, Terminal, Key,
   FileCode, Bug, Siren, Radio, Wifi, Database,
-  Server, HardDrive, Network, Globe, Cpu
+  Server, HardDrive, Network, Globe, Cpu, AlertCircle
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { auth } from '../firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 // 20+ Cyber Security Icons for the background
 const ICONS = [
@@ -32,6 +34,7 @@ export const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
   // Form State
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     fullName: '',
@@ -43,22 +46,52 @@ export const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setError(null); // Clear error on change
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate backend network request
-    setTimeout(() => {
-      setIsLoading(false);
-      onLogin();
-    }, 1500);
+    try {
+        if (isSignUp) {
+            // Register Flow
+            const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            
+            // Update profile with name (Note: Firestore would be better for company/role)
+            await updateProfile(userCredential.user, {
+                displayName: formData.fullName
+            });
+            
+            // In a real app, save company/role to Firestore 'users' collection here
+            console.log("Registered:", userCredential.user.uid, formData.company, formData.role);
+            
+        } else {
+            // Login Flow
+            await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        }
+        
+        onLogin(); // Trigger app state update
+    } catch (err: any) {
+        console.error("Auth Error:", err);
+        // Map common Firebase errors to user-friendly messages
+        let msg = "Authentication failed. Please try again.";
+        if (err.code === 'auth/invalid-email') msg = "Invalid email address.";
+        if (err.code === 'auth/user-not-found') msg = "No user found with this email.";
+        if (err.code === 'auth/wrong-password') msg = "Incorrect password.";
+        if (err.code === 'auth/email-already-in-use') msg = "Email already registered.";
+        if (err.code === 'auth/weak-password') msg = "Password should be at least 6 characters.";
+        
+        setError(msg);
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
-    // Clear specific fields if needed, or keep for UX
+    setError(null);
   };
 
   return (
@@ -123,6 +156,14 @@ export const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           <div className="p-8 pt-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               
+              {/* Error Alert */}
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-3 text-red-400 text-sm animate-in fade-in slide-in-from-top-2">
+                    <AlertCircle className="w-5 h-5 shrink-0" />
+                    <span>{error}</span>
+                </div>
+              )}
+
               {isSignUp && (
                 <div className="animate-in fade-in slide-in-from-top-4 space-y-4">
                     {/* Full Name */}
@@ -228,7 +269,7 @@ export const Login: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full bg-primary hover:bg-emerald-600 text-slate-950 font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden"
+                className="w-full bg-primary hover:bg-emerald-600 text-slate-950 font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group relative overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                     <>
