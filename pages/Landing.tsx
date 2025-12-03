@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { AgentVisualizer } from '../components/AgentVisualizer';
 import { 
   Shield, Zap, Search, Lock, ArrowRight, CheckCircle2, 
-  Globe, Server, Settings, Cpu, FileText, ScanSearch
+  Globe, Server, Settings, Cpu, FileText, ScanSearch,
+  Database, Code, Network, AlertTriangle, X, Linkedin, Instagram, Palette
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AgentLog } from '../types';
 
 const PIPELINE_STEPS = [
   { 
@@ -65,14 +67,189 @@ const PIPELINE_STEPS = [
   }
 ];
 
+const THREAT_KNOWLEDGE = [
+  {
+    icon: Database,
+    title: "SQL Injection (SQLi)",
+    simple: "Like tricking a guard into giving you the keys to the file cabinet by asking a confusing question.",
+    tech: "Insertion of malicious SQL queries via input data from the client to the application."
+  },
+  {
+    icon: Code,
+    title: "Cross-Site Scripting (XSS)",
+    simple: "Leaving a digital sticky note on a website that forces everyone who reads it to do something dangerous.",
+    tech: "Injecting malicious client-side scripts into web pages viewed by other users."
+  },
+  {
+    icon: Network,
+    title: "Man-in-the-Middle (MitM)",
+    simple: "A secret listener eavesdropping on a private conversation and relaying messages between two people.",
+    tech: "Attacker secretly intercepts and relays communications between two parties who believe they are communicating directly."
+  },
+  {
+    icon: AlertTriangle,
+    title: "Zero-Day Exploit",
+    simple: "Breaking in through a secret door that the builder of the house doesn't even know exists yet.",
+    tech: "Cyberattack that occurs on the same day a weakness is discovered in software, before a fix is released."
+  }
+];
+
+const AboutModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+
+    return (
+        <AnimatePresence>
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+                onClick={onClose}
+            >
+                <motion.div 
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    className="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <button 
+                        onClick={onClose}
+                        className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+
+                    <div className="p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                <Shield className="w-8 h-8 text-primary" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-bold text-white">About WeSafeSite</h2>
+                                <p className="text-sm text-slate-400">Architecting the future of autonomous defense.</p>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-8 mb-8">
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-sm font-mono uppercase text-emerald-500 font-bold mb-2">Our Vision</h3>
+                                    <p className="text-slate-300 text-sm leading-relaxed">
+                                        To democratize enterprise-grade cybersecurity. We believe that powerful, autonomous protection should be accessible to every developer, ensuring a safer internet for everyone.
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-mono uppercase text-blue-500 font-bold mb-2">Our Mission</h3>
+                                    <p className="text-slate-300 text-sm leading-relaxed">
+                                        Building a swarm of intelligent agents that don't just detect threats, but understand and fix them—closing the gap between vulnerability discovery and remediation.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-950 rounded-xl p-6 border border-slate-800 flex flex-col items-center text-center">
+                                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-blue-600 p-[2px] mb-4">
+                                    <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                                        <Code className="w-10 h-10 text-slate-400" />
+                                    </div>
+                                </div>
+                                <h3 className="text-lg font-bold text-white">Umair Saad</h3>
+                                <p className="text-xs text-emerald-400 font-mono mb-4">Lead Architect & Developer</p>
+                                
+                                <div className="flex gap-3">
+                                    <a 
+                                        href="https://www.linkedin.com/in/umair-saad-mob-app-dev/" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="p-2 bg-slate-900 rounded-lg border border-slate-700 hover:border-blue-500 hover:text-blue-400 text-slate-400 transition-all"
+                                        title="LinkedIn"
+                                    >
+                                        <Linkedin className="w-4 h-4" />
+                                    </a>
+                                    <a 
+                                        href="https://www.instagram.com/umairsaad_" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="p-2 bg-slate-900 rounded-lg border border-slate-700 hover:border-pink-500 hover:text-pink-400 text-slate-400 transition-all"
+                                        title="Instagram"
+                                    >
+                                        <Instagram className="w-4 h-4" />
+                                    </a>
+                                    <a 
+                                        href="https://www.behance.net/umairsaad2" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="p-2 bg-slate-900 rounded-lg border border-slate-700 hover:border-blue-400 hover:text-blue-400 text-slate-400 transition-all"
+                                        title="Behance"
+                                    >
+                                        <Palette className="w-4 h-4" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-6 border-t border-slate-800 text-center">
+                            <p className="text-xs text-slate-500">
+                                "Security is not a product, but a process."
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
+  const [demoLogs, setDemoLogs] = useState<AgentLog[]>([]);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
+  // Horizontal Pipeline Animation
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % PIPELINE_STEPS.length);
     }, 3000); // 3 seconds per step to allow reading
+    return () => clearInterval(interval);
+  }, []);
+
+  // Hero Section Agent Simulation Loop
+  useEffect(() => {
+    const sequence = [
+        { agent: 'Recon', msg: 'Initializing scan on demo-target.com...', status: 'info' },
+        { agent: 'Recon', msg: 'Map complete: 14 endpoints found.', status: 'success' },
+        { agent: 'Scanner', msg: 'Testing for SQL Injection...', status: 'info' },
+        { agent: 'Scanner', msg: 'CRITICAL: SQLi found at /login', status: 'error' },
+        { agent: 'Patcher', msg: 'Analysing vulnerability context...', status: 'warning' },
+        { agent: 'Patcher', msg: 'Drafting secure code fix...', status: 'info' },
+        { agent: 'Patcher', msg: 'Patch verified and ready.', status: 'success' },
+        { agent: 'Memory', msg: 'Scan signature stored to database.', status: 'info' },
+    ];
+
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+        setDemoLogs(prev => {
+            // Reset if we have too many logs to keep it clean, or at end of sequence
+            if (currentIndex >= sequence.length) {
+                currentIndex = 0;
+                return []; 
+            }
+
+            const step = sequence[currentIndex];
+            const newLog: AgentLog = {
+                id: Math.random().toString(),
+                agentName: step.agent as any,
+                message: step.msg,
+                status: step.status as any,
+                timestamp: new Date()
+            };
+            
+            currentIndex++;
+            return [...prev, newLog];
+        });
+    }, 1200); // Speed of chat updates
+
     return () => clearInterval(interval);
   }, []);
 
@@ -86,6 +263,8 @@ export const Landing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-white">
+      <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+      
       {/* Navigation */}
       <nav className="border-b border-slate-800/50 bg-background/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -93,7 +272,13 @@ export const Landing: React.FC = () => {
             <Shield className="w-6 h-6" />
             <span>WeSafeSite</span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-6">
+             <button 
+                onClick={() => setIsAboutOpen(true)}
+                className="text-sm font-medium text-slate-300 hover:text-white transition-colors hidden sm:block"
+             >
+                About
+             </button>
              <button 
                 onClick={handleSignIn}
                 className="text-sm font-medium text-slate-300 hover:text-white transition-colors"
@@ -159,7 +344,7 @@ export const Landing: React.FC = () => {
           {/* Hero Visualizer */}
           <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-200">
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-2xl blur opacity-20"></div>
-            <AgentVisualizer />
+            <AgentVisualizer logs={demoLogs} targetUrl="demo-target.com" />
           </div>
         </div>
       </section>
@@ -295,6 +480,52 @@ export const Landing: React.FC = () => {
                     desc="Powered by Gemini, this agent writes secure code patches tailored to your specific codebase."
                 />
             </div>
+        </div>
+      </section>
+
+      {/* NEW SECTION: Know Your Enemy */}
+      <section className="py-24 bg-slate-900 border-t border-slate-800 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-20"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+           <div className="mb-16 text-center">
+             <span className="text-emerald-500 font-mono text-sm tracking-wider uppercase">Education Hub</span>
+             <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-white">Know Your Enemy</h2>
+             <p className="text-slate-400 max-w-2xl mx-auto">
+               Cyber threats are evolving. We translate complex attack vectors into language everyone can understand.
+             </p>
+           </div>
+
+           <div className="grid md:grid-cols-2 gap-6">
+              {THREAT_KNOWLEDGE.map((item, idx) => (
+                <div key={idx} className="bg-slate-950 border border-slate-800 rounded-xl p-6 hover:border-emerald-500/50 transition-all group">
+                   <div className="flex items-start gap-4">
+                      <div className="p-3 bg-slate-900 rounded-lg group-hover:bg-emerald-500/10 transition-colors">
+                        <item.icon className="w-6 h-6 text-emerald-500" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
+                        <div className="flex flex-col gap-4 mt-4">
+                           {/* Simple View */}
+                           <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">
+                              <p className="text-xs font-mono text-blue-400 uppercase mb-1 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span> In Plain English
+                              </p>
+                              <p className="text-sm text-slate-300">{item.simple}</p>
+                           </div>
+                           
+                           {/* Tech View */}
+                           <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-800/50">
+                              <p className="text-xs font-mono text-purple-400 uppercase mb-1 flex items-center gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Technical Specs
+                              </p>
+                              <p className="text-sm text-slate-400 font-mono text-xs">{item.tech}</p>
+                           </div>
+                        </div>
+                      </div>
+                   </div>
+                </div>
+              ))}
+           </div>
         </div>
       </section>
 
